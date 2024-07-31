@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { useState, useEffect } from 'react'
 import {firestore} from '@/firebase'
+import {collection, deleteDoc, doc, getDocs, query, getDoc, setDoc} from 'firebase/firestore'
 import {Box, Typography, Modal, Stack, TextField, Button} from '@mui/material'
 
 export default function Home() {
@@ -10,7 +11,7 @@ export default function Home() {
   const [itemName, setItemName] = useState('')
 
   const updateInventory = async () => {
-    const snapshop = query(collection(firestore, 'inventory'))
+    const snapshot = query(collection(firestore, 'inventory'))
     const docs = await getDocs(snapshot)
     const inventoryList = []
     docs.forEach((doc) => {
@@ -127,7 +128,34 @@ export default function Home() {
           </Box>
           <Stack width="800px" height="300px" spacing={2} overflow="auto">
             {inventory.map(({name, quantity})=>(
-                <Box key={name}></Box>
+                <Box 
+                  key={name} 
+                  width="100%" 
+                  minHeight="150px" 
+                  display="flex" 
+                  alignItems={"center"} 
+                  justifyContent={"space-between"} 
+                  bgcolor={"#f0f0f0"} 
+                  padding={5}
+                >
+                <Typography 
+                    variance='h3' 
+                    color="#333" 
+                    textAlign={"center"}
+                  >{name.charAt(0).toUpperCase() + name.slice(1)}
+                  </Typography>
+                  <Typography 
+                    variance='h3' 
+                    color="#333" 
+                    textAlign={"center"}
+                  >{quantity}
+                  </Typography>
+                  <Button variant="contained" onClick={() => {
+                    removeItem(name)
+                  }}>
+                    Remove
+                  </Button>
+                </Box>
               ))}
           </Stack>
         </Box>
