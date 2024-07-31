@@ -23,6 +23,20 @@ export default function Home() {
     setInventory(inventoryList)
   }
 
+  const addItem = async (item) => {
+    const docRef = doc(collection(firestore, 'inventory'), item)
+    const docSnap = await getDoc(docRef)
+
+    if(docSnap.exists()) {
+      const {quantity} = docSnap.data()
+      await setDoc(docRef, {quantity: quantity + 1})
+    } else {
+      await setDoc(docRef, {quantity: 1})
+    }
+
+    await updateInventory()
+  }
+
   const removeItem = async (item) => {
     const docRef = doc(collection(firestore, 'inventory'), item)
     const docSnap = await getDoc(docRef)
@@ -43,16 +57,10 @@ export default function Home() {
     updateInventory()
   }, [])
 
+  handleOpen = () => setOpen(true)
+  handleClose = () => setOpen(false)
+
   return <Box>
       <Typography variant="h1">Inventory Management</Typography>
-      {
-        inventory.forEach((item)=>{
-          console.log(item)
-          return(<Box>
-            {item.name}
-            {item.count}
-          </Box>)
-        })
-      }
     </Box>
 }
