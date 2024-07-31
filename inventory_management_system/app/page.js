@@ -150,11 +150,18 @@ export default function Home() {
                     textAlign={"center"}
                   >{quantity}
                   </Typography>
+                  <Stack direction="row" spacing={2}>
+                  <Button variant="contained" onClick={() => {
+                    addItem(name)
+                  }}>
+                    Add
+                  </Button>
                   <Button variant="contained" onClick={() => {
                     removeItem(name)
                   }}>
                     Remove
                   </Button>
+                  </Stack>
                 </Box>
               ))}
           </Stack>
