@@ -6,7 +6,7 @@ import {Box, Typography, Modal, Stack, TextField, Button} from '@mui/material'
 
 export default function Home() {
   const [inventory, setInventory] = useState([])
-  const [open, setOpen] = useState([])
+  const [open, setOpen] = useState(false)
   const [itemName, setItemName] = useState('')
 
   const updateInventory = async () => {
@@ -65,6 +65,7 @@ export default function Home() {
       width="100vw" 
       height="100vh" 
       display="flex" 
+      flexDirection={"column"}
       justifyContent="center" 
       alignItems={"center"} 
       gap={2}
@@ -107,7 +108,29 @@ export default function Home() {
           </Stack>
         </Box>
       </Modal>
-        <Typography variant="h1">Inventory Management</Typography>
+        <Button variant="contained" onClick={() => {
+          handleOpen()
+        }}>
+          Add New Item
+        </Button>
+        <Box border='1px solid #333'>
+          <Box width="800px" height="100px"
+          bgcolor="#ADD8E6"
+          alignItems={"center"}
+          justifyContent={"center"}
+          display="flex"
+          >
+            <Typography
+            variant="h2"
+            color="#333"
+            >Inventory Items</Typography>
+          </Box>
+          <Stack width="800px" height="300px" spacing={2} overflow="auto">
+            {inventory.map(({name, quantity})=>(
+                <Box key={name}></Box>
+              ))}
+          </Stack>
+        </Box>
     </Box>
   )
 }
