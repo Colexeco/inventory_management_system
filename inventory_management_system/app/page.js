@@ -54,6 +54,18 @@ export default function Home() {
     await updateInventory()
   }
 
+  const deleteItem = async (item) => {
+    const docRef = doc(collection(firestore, 'inventory'), item)
+    const docSnap = await getDoc(docRef)
+
+    if(docSnap.exists()) {
+      const {quantity} = docSnap.data()
+      await deleteDoc(docRef)
+    }
+
+    await updateInventory()
+  }
+
   useEffect(() => {
     updateInventory()
   }, [])
@@ -159,7 +171,12 @@ export default function Home() {
                   <Button variant="contained" onClick={() => {
                     removeItem(name)
                   }}>
-                    Remove
+                    Decrement
+                  </Button>
+                  <Button variant="contained" onClick={() => {
+                    deleteItem(name)
+                  }}>
+                    Delete
                   </Button>
                   </Stack>
                 </Box>
