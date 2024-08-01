@@ -6,12 +6,12 @@ import {getFirestore} from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: process.env.API_KEY,
+  apiKey: "AIzaSyC1TIXHCKcnLwwa-ETFWotZ-QmDPIpLGNc",
   authDomain: "inventory-management-sys-f8870.firebaseapp.com",
   projectId: "inventory-management-sys-f8870",
   storageBucket: "inventory-management-sys-f8870.appspot.com",
   messagingSenderId: "322811984085",
-  appId: process.env.APP_ID
+  appId: "1:322811984085:web:84ce5431eff991cf098a5c"
 };
 
 // Initialize Firebase
