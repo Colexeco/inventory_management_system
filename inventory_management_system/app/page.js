@@ -10,6 +10,7 @@ export default function Home() {
   const [open, setOpen] = useState(false)
   const [itemName, setItemName] = useState('')
   const [search, setSearch] = useState(false)
+  const [displaySearchResult, setDisplaySearchResult] = useState(false)
   const [searchResultList, setSearchResultList] = useState([])
   const [searchItemName, setSearchItemName] = useState('')
 
@@ -23,7 +24,6 @@ export default function Home() {
         ...doc.data(),
       })
     })
-    //console.log(inventoryList)
     setInventory(inventoryList)
   }
 
@@ -97,6 +97,8 @@ export default function Home() {
   const handleClose = () => setOpen(false)
   const searchOpen = () => setSearch(true)
   const searchClose = () => setSearch(false)
+  const handleSearchResultOpen = () => setDisplaySearchResult(true)
+  const handleSearchResultClose = () => {setDisplaySearchResult(false), setSearchResultList([])}
 
   return (
     <Box 
@@ -146,6 +148,77 @@ export default function Home() {
           </Stack>
         </Box>
       </Modal>
+      {/*DISPLAY SEARCH RESULTS*/}
+      <Modal
+        open={displaySearchResult}
+        onClose={handleSearchResultClose}
+      >
+        <Box
+          position={'absolute'}
+          top="50%"
+          left="50%"
+          bgcolor="white"
+          border="2px solid #000"
+          boxShadow={24}
+          p={4}
+          display={"flex"}
+          flexDirection={"column"}
+          gap={3}
+          sx={{
+            transform:"translate(-50%,-50%)"
+          }}
+        >
+          <Typography variant="h6" textAlign={"center"}>Search Results</Typography>
+          <Stack 
+          width="800px" 
+          height="300px" 
+          spacing={2} 
+          >
+          {searchResultList.map(({name, quantity})=>(
+              <Box 
+                key={name} 
+                width="100%" 
+                minHeight="150px" 
+                display="flex" 
+                alignItems={"center"} 
+                justifyContent={"space-between"} 
+                bgcolor={"#f0f0f0"} 
+                padding={5}
+              >
+              <Typography 
+                  variance='h3' 
+                  color="#333" 
+                  textAlign={"center"}
+                >{name.charAt(0).toUpperCase() + name.slice(1)}
+                </Typography>
+                <Typography 
+                  variance='h3' 
+                  color="#333" 
+                  textAlign={"center"}
+                >{quantity}
+                </Typography>
+                <Stack direction="row" spacing={2}>
+                <Button variant="contained" onClick={() => {
+                  addItem(name)
+                }}>
+                  Add
+                </Button>
+                <Button variant="contained" onClick={() => {
+                  removeItem(name)
+                }}>
+                  Decrement
+                </Button>
+                <Button variant="contained" onClick={() => {
+                  deleteItem(name)
+                }}>
+                  Delete
+                </Button>
+                </Stack>
+              </Box>
+            ))}
+          </Stack>
+        </Box>
+      </Modal>
       <Modal
         open={search}
         onClose={searchClose}
@@ -179,8 +252,12 @@ export default function Home() {
             <Button variant="outlined" onClick={()=>{
               searchItem(searchItemName)
               setSearchItemName('')
+              handleSearchResultOpen()
+              console.log(displaySearchResult)
               searchClose()
-            }}>Search</Button>
+              }}
+            >
+              Search</Button>
           </Stack>
         </Box>
       </Modal>
@@ -206,6 +283,7 @@ export default function Home() {
             color="#333"
             >Inventory Items</Typography>
           </Box>
+          {/*DISPLAY FULL INVENTORY*/}
           <Stack width="800px" height="300px" spacing={2} overflow="auto">
             {inventory.map(({name, quantity})=>(
                 <Box 
