@@ -9,6 +9,9 @@ export default function Home() {
   const [inventory, setInventory] = useState([])
   const [open, setOpen] = useState(false)
   const [itemName, setItemName] = useState('')
+  const [search, setSearch] = useState(false)
+  const [searchResultList, setSearchResultList] = useState([])
+  const [searchItemName, setSearchItemName] = useState('')
 
   const updateInventory = async () => {
     const snapshot = query(collection(firestore, 'inventory'))
@@ -20,7 +23,7 @@ export default function Home() {
         ...doc.data(),
       })
     })
-    console.log(inventoryList)
+    //console.log(inventoryList)
     setInventory(inventoryList)
   }
 
@@ -28,7 +31,7 @@ export default function Home() {
     const docRef = doc(collection(firestore, 'inventory'), item)
     const docSnap = await getDoc(docRef)
 
-    if(docSnap.exists()) {
+    if (docSnap.exists()) {
       const {quantity} = docSnap.data()
       await setDoc(docRef, {quantity: quantity + 1})
     } else {
@@ -38,11 +41,28 @@ export default function Home() {
     await updateInventory()
   }
 
+  const searchItem = async (item) => {
+    const snapshot = query(collection(firestore, 'inventory'))
+    const docs = await getDocs(snapshot)
+    const searchResultList = []
+    docs.forEach((doc) => {
+      if (doc.id == item) {
+        searchResultList.push({
+          name: doc.id,
+          ...doc.data(),
+        })
+        setSearchResultList(searchResultList)
+        console.log(searchResultList)
+      }
+    })
+    await searchItem()
+  }
+
   const removeItem = async (item) => {
     const docRef = doc(collection(firestore, 'inventory'), item)
     const docSnap = await getDoc(docRef)
 
-    if(docSnap.exists()) {
+    if (docSnap.exists()) {
       const {quantity} = docSnap.data()
       if (quantity === 1) {
         await deleteDoc(docRef)
@@ -59,7 +79,6 @@ export default function Home() {
     const docSnap = await getDoc(docRef)
 
     if(docSnap.exists()) {
-      const {quantity} = docSnap.data()
       await deleteDoc(docRef)
     }
 
@@ -70,8 +89,14 @@ export default function Home() {
     updateInventory()
   }, [])
 
+  useEffect(() => {
+    searchItem()
+  }, [])
+
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
+  const searchOpen = () => setSearch(true)
+  const searchClose = () => setSearch(false)
 
   return (
     <Box 
@@ -121,10 +146,53 @@ export default function Home() {
           </Stack>
         </Box>
       </Modal>
+      <Modal
+        open={search}
+        onClose={searchClose}
+      >
+        <Box
+          position={'absolute'}
+          top="50%"
+          left="50%"
+          width={400}
+          bgcolor="white"
+          border="2px solid #000"
+          boxShadow={24}
+          p={4}
+          display={"flex"}
+          flexDirection={"column"}
+          gap={3}
+          sx={{
+            transform:"translate(-50%,-50%)"
+          }}
+        >
+          <Typography variant="h6">Search Item By Name</Typography>
+          <Stack width="100%" direction="row" spacing={2}>
+            <TextField
+            variant="outlined"
+            fullWidth
+            value={searchItemName}
+            onChange={(e) => {
+              setSearchItemName(e.target.value)
+            }}
+            ></TextField>
+            <Button variant="outlined" onClick={()=>{
+              searchItem(searchItemName)
+              setSearchItemName('')
+              searchClose()
+            }}>Search</Button>
+          </Stack>
+        </Box>
+      </Modal>
         <Button variant="contained" onClick={() => {
           handleOpen()
         }}>
           Add New Item
+        </Button>
+        <Button variant="contained" onClick={() => {
+          searchOpen()
+        }}>
+          Search Item By Name
         </Button>
         <Box border='1px solid #333'>
           <Box width="800px" height="100px"
